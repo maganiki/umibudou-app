@@ -59,7 +59,9 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    const questionnaireUrl = `/questionnaire/${encodeURIComponent(reservation.id)}?token=${encodeURIComponent(expectedToken)}`
+    // 問診ページの動的セグメントは予約IDではなく questionnaireToken。
+    // 予約IDを入れると questionnaire/[id]/layout.tsx の認証に失敗して404になる。
+    const questionnaireUrl = `/questionnaire/${encodeURIComponent(expectedToken)}`
 
     return NextResponse.json({
       reservation: {

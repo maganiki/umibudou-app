@@ -78,14 +78,15 @@ export default function BookingPage() {
     if (!canvas) return
     const a = document.createElement('a')
     a.href = canvas.toDataURL('image/png')
-    a.download = `予約QR_${resId}.png`
+    a.download = `チェックインQR_${resId}.png`
     a.click()
   }
 
   if (done) {
-    // QRには問診票入力ページのURLを埋め込む（当日スタッフが読み取る／事前入力にも使える）
+    // 予約後のQRはチェックイン画面を開く。予約確認後は、この画面で参加者ごとの受付QRを表示する。
     const qrUrl = `${window.location.origin}/questionnaire/${questionnaireToken}`
     const checkinPath = buildCheckinPath(resId, questionnaireToken)
+    const checkinUrl = `${window.location.origin}${checkinPath}`
     return (
       <div className="min-h-screen bg-gradient-to-b from-ocean-700 to-ocean-500 flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center">
@@ -99,8 +100,9 @@ export default function BookingPage() {
           <div className="mt-6 bg-gray-50 rounded-xl border border-gray-200 p-5">
             <p className="text-xs text-gray-500 mb-1">予約番号</p>
             <p className="font-mono font-bold text-gray-800 mb-4">{resId}</p>
+            <p className="text-xs text-gray-500 mb-2">チェックインQR</p>
             <div className="flex justify-center">
-              <QRCodeCanvas id="booking-qr" value={qrUrl} size={180} includeMargin />
+              <QRCodeCanvas id="booking-qr" value={checkinUrl} size={180} includeMargin />
             </div>
             <div className="text-left text-sm text-gray-700 mt-4 space-y-1">
               <p>📅 {form.diveDate}（{timeSlotLabel}）</p>
@@ -108,18 +110,17 @@ export default function BookingPage() {
               <p>👤 {form.guestName} 様（{form.guestCount}名）</p>
             </div>
             <p className="text-xs text-gray-500 mt-4 leading-relaxed">
-              このQRはあなたの予約ページ（問診票入力）につながります。
-              問診の送信後に表示される受付用QRを、当日スタッフにご提示ください。
-              問診票は事前のご入力も可能です。
+              このQRはチェックインQR画面につながります。
+              問診票の提出とスタッフの予約確定後に開くと、参加者ごとの受付用QRを表示できます。
             </p>
             <a href={qrUrl} className="mt-4 block text-sm font-medium text-ocean-600 underline">問診票に進む</a>
-            <a href={checkinPath} className="mt-2 block text-sm font-medium text-ocean-600 underline">受付QRを確認する（保存用リンク）</a>
+            <a href={checkinPath} className="mt-2 block text-sm font-medium text-ocean-600 underline">チェックインQR画面を開く</a>
             <p className="text-xs text-gray-400 mt-1 leading-relaxed">
               問診票の提出とスタッフの確定後に、受付QRを確認できます。このスマホでは「チェックインQR」を開くだけで自動表示されます。別の端末で開くときのために、このリンクも残しておくと安心です。
             </p>
             <button onClick={downloadQr}
               className="mt-4 w-full bg-ocean-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-ocean-700 transition-colors">
-              ⬇ QRコードを保存する
+              ⬇ チェックインQRを保存する
             </button>
           </div>
 
