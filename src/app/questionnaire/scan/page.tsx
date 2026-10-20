@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { createQrDetector } from '@/lib/qrDetector'
 import StaffQuestionnaireCheck from '@/components/StaffQuestionnaireCheck'
 import Navigation from '@/components/Navigation'
 import { useAuth } from '@/lib/authContext'
@@ -25,11 +26,8 @@ const HEALTH_FLAGS: [keyof QuestionnaireData, string][] = [
   ['alcoholToday', '当日飲酒'],
   ['alcoholLastNight', '前日飲酒'],
 ]
-type Detector = {
-  detect(video: HTMLVideoElement): Promise<{ rawValue?: string }[]>
-}
 type DetectorWindow = Window & {
-  BarcodeDetector?: new (options?: { formats: string[] }) => Detector
+  BarcodeDetector?: Parameters<typeof createQrDetector>[0]
 }
 
 function ScanContent() {
@@ -143,13 +141,6 @@ function ScanContent() {
 
   async function startCamera() {
     setCameraError('')
-    const DetectorClass = (window as DetectorWindow).BarcodeDetector
-    if (!DetectorClass) {
-      setCameraError(
-        'このブラウザはQR読取に対応していません。手動検索をご利用ください。'
-      )
-      return
-    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: 'environment' } },
@@ -171,16 +162,14 @@ function ScanContent() {
     if (!cameraOn || !streamRef.current || !videoRef.current) return
     const video = videoRef.current
     const stream = streamRef.current
-    const DetectorClass = (window as DetectorWindow).BarcodeDetector
-    if (!DetectorClass) return
     let active = true
     video.srcObject = stream
-    const detector = new DetectorClass({ formats: ['qr_code'] })
+    // ブラウザ標準の読取機能があれば使い、なければライブラリで読み取る（Windows の Chrome/Edge など）
+    const detector = createQrDetector((window as DetectorWindow).BarcodeDetector)
     const scan = async () => {
       if (!active) return
       try {
-        const codes = await detector.detect(video)
-        const value = codes[0]?.rawValue
+        const value = await detector.detect(video)
         if (value) {
           stopCamera()
           lookup(value, 'QR読取')
