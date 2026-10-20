@@ -27,6 +27,10 @@ const env = {
   STAFF_CREDENTIALS: process.env.DEMO_STAFF_CREDENTIALS || 'staff@okidive.com:test1234',
   SESSION_SECRET: process.env.SESSION_SECRET || 'demo-only-session-secret-not-for-production',
 }
+// ログイン画面の入力欄に、あらかじめスタッフのメールアドレスとパスワードを入れておく
+const [demoEmail, ...demoPasswordParts] = env.STAFF_CREDENTIALS.split('|')[0].split(':')
+env.NEXT_PUBLIC_DEMO_LOGIN_EMAIL = demoEmail
+env.NEXT_PUBLIC_DEMO_LOGIN_PASSWORD = demoPasswordParts.join(':')
 // 外部のデータ保存先には、つながないようにする
 for (const key of [
   'DATA_STORE',
@@ -42,7 +46,7 @@ for (const key of [
 
 console.log(`デモ用サーバーを起動します → http://127.0.0.1:${port}/booking`)
 console.log(`  お客さん側: /booking（予約フォーム）`)
-console.log(`  スタッフ側: /login（${env.STAFF_CREDENTIALS.split(':')[0]}）`)
+console.log(`  スタッフ側: /login（メールアドレスとパスワードは入力済み。ログインを押すだけ）`)
 
 const nextBin = path.join(root, 'node_modules', 'next', 'dist', 'bin', 'next')
 const child = spawn(process.execPath, [nextBin, 'dev', '--hostname', '127.0.0.1', '--port', port], {

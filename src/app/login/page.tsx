@@ -4,12 +4,20 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { login } from '@/lib/auth'
 import { useAuthRefresh } from '@/lib/authContext'
+import { demoLoginDefaults } from '@/lib/demoLogin'
 
 export default function LoginPage() {
   const router = useRouter()
   const refreshAuth = useAuthRefresh()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  // デモ用: 環境変数があるときだけ、入力欄にあらかじめ値を入れる（なければ空欄）
+  const [initial] = useState(() =>
+    demoLoginDefaults({
+      email: process.env.NEXT_PUBLIC_DEMO_LOGIN_EMAIL,
+      password: process.env.NEXT_PUBLIC_DEMO_LOGIN_PASSWORD,
+    })
+  )
+  const [email, setEmail] = useState(initial.email)
+  const [password, setPassword] = useState(initial.password)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
