@@ -18,6 +18,7 @@ firebase-debug.log
 
 # ローカル永続化データ（Sheets未設定時のフォールバック保存先）
 data/
+.demo-data/
 
 # misc
 .DS_Store

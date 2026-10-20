@@ -23,7 +23,7 @@ export default function LoginPage() {
       // AuthProvider はルートレイアウトで一度しかマウントされないため、
       // 遷移前にコンテキストを更新しないと user が null のまま /login に戻される
       await refreshAuth()
-      router.push('/dashboard')
+      router.push('/reservations')
     } else {
       setError('メールアドレスまたはパスワードが正しくありません')
     }

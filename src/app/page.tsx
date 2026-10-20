@@ -10,7 +10,8 @@ export default function RootPage() {
 
   useEffect(() => {
     if (user === undefined) return // 認証状態の初期取得中は待つ
-    router.replace(user ? '/dashboard' : '/login')
+    // デモ用: 未ログインなら予約フォーム（お客さん側）から始める
+    router.replace(user ? '/reservations' : '/booking')
   }, [user, router])
 
   return null

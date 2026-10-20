@@ -6,17 +6,18 @@ import { requireStaffSession } from '@/lib/staffAuth'
 const PUBLIC_PATHS = [
   '/login',
   '/booking',      // 客側：予約申し込みフォーム
-  '/line-menu',    // LINEリッチメニューから開くゲスト向け画面
   '/_next',
 ]
 
 function isPublic(pathname: string): boolean {
+  // デモ用: 入口（/）は、ページ側で予約フォームかスタッフ画面へ振り分ける
+  if (pathname === '/') return true
   // Staff-only scan must stay protected even though /questionnaire/[id] is public.
   if (pathname === '/questionnaire/scan' || pathname.startsWith('/questionnaire/scan/')) return false
   // The handler still requires its own CRON_SECRET bearer token.
   if (pathname === '/api/cron/sheets-outbox') return true
   if (pathname === '/api/auth' || pathname.startsWith('/api/public/')) return true
-  if (pathname === '/favicon.ico' || pathname === '/line-rich-menu.png') return true
+  if (pathname === '/favicon.ico') return true
   if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return true
   // ダイバー向け問診票入力画面はログイン不要（/questionnaire/[id] のみ）
   if (/^\/questionnaire\/[^/]+\/?$/.test(pathname)) return true

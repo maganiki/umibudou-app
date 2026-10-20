@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import WeatherWidget from '@/components/WeatherWidget'
 import Navigation from '@/components/Navigation'
 import { useAuth } from '@/lib/authContext'
 import { useReservationLists } from '@/lib/useReservationLists'
@@ -18,7 +16,6 @@ import {
   reservationStatusStyle,
 } from '@/lib/reservationStatus'
 import QuestionnaireUrlButton from '@/components/QuestionnaireUrlButton'
-import OtaCsvImport from '@/components/OtaCsvImport'
 import type { Reservation, QuestionnaireData } from '@/types'
 
 const CHANNEL_LABELS: Record<Reservation['channel'], string> = {
@@ -57,12 +54,8 @@ export default function ReservationsPage() {
     if (user === null) router.push('/login')
   }, [user, router])
 
-  const { reservations, setReservations, questionnaires, loading, loadError, reloadReservationsFresh } =
+  const { reservations, setReservations, loading, loadError, reloadReservationsFresh } =
     useReservationLists(Boolean(user))
-
-  function questionnaireIdFor(reservationId: string): string | undefined {
-    return questionnaires.find((q) => q.reservationId === reservationId)?.id
-  }
 
   const filtered = reservations
     .filter((r) => !dateFilter || r.diveDate === dateFilter)
@@ -99,16 +92,11 @@ export default function ReservationsPage() {
     }
   }
 
-  async function reloadAfterImport() {
-    try { await reloadReservationsFresh() } catch { /* 次回の自動更新で反映される */ }
-  }
-
   if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400 text-sm">読み込み中…</div>
 
   return (
     <div className="min-h-screen">
       <Navigation />
-      <WeatherWidget />
       {actionError && <p role="alert" className="p-4 text-red-700">{actionError}</p>}
       {loadError && <p role="status" className="p-4 text-amber-700">{loadError}</p>}
       <main className="max-w-5xl mx-auto px-4 py-6 pb-20 md:pb-6 space-y-4">
@@ -127,12 +115,6 @@ export default function ReservationsPage() {
               すべて表示
             </button>
           )}
-          <Link href="/reservations/new"
-            className="bg-ocean-600 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-ocean-700 transition-colors">
-            ＋ 予約追加
-          </Link>
-          {/* 取込結果パネルは basis-full で操作行の下に折り返す */}
-          <OtaCsvImport onImported={reloadAfterImport} />
         </div>
 
         {successMessage && (
@@ -149,7 +131,6 @@ export default function ReservationsPage() {
           ) : (
             <div className="divide-y divide-gray-100">
               {filtered.map((r) => {
-                const questionnaireId = questionnaireIdFor(r.id)
                 return (
                   <div key={r.id} className="px-4 py-4">
                     <div className="flex items-start gap-3">
@@ -173,12 +154,6 @@ export default function ReservationsPage() {
                         {r.staffNote && <div className="text-xs text-gray-500 mt-1 bg-gray-50 rounded px-2 py-1">💬 {r.staffNote}</div>}
                       </div>
                       <div className="flex flex-col gap-1.5 shrink-0">
-                        {questionnaireId && (
-                          <Link href={`/questionnaire/scan?id=${questionnaireId}`}
-                            className="text-xs bg-teal-50 text-teal-700 border border-teal-200 px-2 py-1 rounded text-center hover:bg-teal-100">
-                            📋 問診確認
-                          </Link>
-                        )}
                         <QuestionnaireUrlButton reservationId={r.id} onError={setActionError} />
                         {isPendingReservationStatus(r.status) && (
                           <button onClick={() => handleConfirm(r.id)}

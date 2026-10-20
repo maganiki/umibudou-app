@@ -5,12 +5,10 @@ import { usePathname, useRouter } from 'next/navigation'
 import { logout } from '@/lib/auth'
 import { useAuthRefresh } from '@/lib/authContext'
 
+// デモ用: 予約 → 問診 → 顧客登録の流れで見せる画面だけを残している
 const links = [
-  {href:'/roster',label:'📋 名簿'},
-  { href: '/dashboard',          label: '🏠 ダッシュボード' },
-  { href: '/reservations',       label: '📅 予約管理' },
-  { href: '/customers',          label: '👥 顧客台帳' },
-  { href: '/questionnaire/scan', label: '📷 QR読取' },
+  { href: '/reservations', label: '📅 予約管理' },
+  { href: '/customers',    label: '👥 顧客台帳' },
 ]
 
 export default function Navigation() {

@@ -98,7 +98,7 @@ describe('page and API authentication boundaries', () => {
     },
   )
 
-  it.each(['/login', '/booking', '/line-menu/checkin', '/api/auth', '/api/public/bookings', '/api/public/questionnaires', '/api/public/checkin-qr', '/api/cron/sheets-outbox', '/questionnaire/opaque-token', '/_next/static/app.js', '/favicon.ico', '/line-rich-menu.png'])(
+  it.each(['/login', '/booking', '/api/auth', '/api/public/bookings', '/api/public/questionnaires', '/api/public/checkin-qr', '/api/cron/sheets-outbox', '/questionnaire/opaque-token', '/_next/static/app.js', '/favicon.ico'])(
     'keeps public and independently authenticated paths available: %s', async (url) => {
       vi.stubEnv('SESSION_SECRET', '')
       expect((await middleware(request(url))).headers.get('x-middleware-next')).toBe('1')
