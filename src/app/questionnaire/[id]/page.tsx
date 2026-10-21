@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { QRCodeSVG } from 'qrcode.react'
+import { DEMO_QUESTIONNAIRE, demoPrefillEnabled } from '@/lib/demoPrefill'
 import type { QuestionnaireFormData } from '@/types'
 
 import {
@@ -143,10 +144,17 @@ const BLANK: FormData = {
   agreePhoto: null,
 }
 
+/** デモ用: NEXT_PUBLIC_DEMO_PREFILL=true のときだけ、架空の人物の内容を入れた状態で始める */
+function initialForm(): FormData {
+  return demoPrefillEnabled(process.env.NEXT_PUBLIC_DEMO_PREFILL)
+    ? { ...BLANK, ...(DEMO_QUESTIONNAIRE as Partial<FormData>) }
+    : BLANK
+}
+
 export default function QuestionnairePage() {
   const { id } = useParams<{ id: string }>()
   const [step, setStep] = useState<Step>('intro')
-  const [form, setForm] = useState(BLANK)
+  const [form, setForm] = useState(initialForm)
   const [qId, setQId] = useState('')
   const [qrToken, setQrToken] = useState('')
   const [qrExpiresAt, setQrExpiresAt] = useState('')

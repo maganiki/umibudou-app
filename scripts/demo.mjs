@@ -31,6 +31,8 @@ const env = {
 const [demoEmail, ...demoPasswordParts] = env.STAFF_CREDENTIALS.split('|')[0].split(':')
 env.NEXT_PUBLIC_DEMO_LOGIN_EMAIL = demoEmail
 env.NEXT_PUBLIC_DEMO_LOGIN_PASSWORD = demoPasswordParts.join(':')
+// 予約フォームと問診票にも、架空の人物の内容をあらかじめ入れておく（入力の手間を省く）
+env.NEXT_PUBLIC_DEMO_PREFILL = 'true'
 // 外部のデータ保存先には、つながないようにする
 for (const key of [
   'DATA_STORE',
@@ -45,7 +47,7 @@ for (const key of [
 }
 
 console.log(`デモ用サーバーを起動します → http://127.0.0.1:${port}/booking`)
-console.log(`  お客さん側: /booking（予約フォーム）`)
+console.log(`  お客さん側: /booking（予約フォーム。入力済みなので、そのまま送信できる）`)
 console.log(`  スタッフ側: /login（メールアドレスとパスワードは入力済み。ログインを押すだけ）`)
 
 const nextBin = path.join(root, 'node_modules', 'next', 'dist', 'bin', 'next')

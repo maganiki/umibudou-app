@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { COURSES } from '@/lib/masters'
+import { DEMO_BOOKING, demoPrefillEnabled } from '@/lib/demoPrefill'
 import type { Reservation } from '@/types'
 
 const TIME_SLOTS: [Reservation['timeSlot'], string][] = [
@@ -14,11 +15,10 @@ export default function BookingPage() {
     diveDate: new Date(Date.now() + 86400000).toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' }),
     timeSlot: 'morning' as Reservation['timeSlot'],
     courseId: COURSES[0].id,
-    guestName: '',
-    guestCount: 1,
-    guestPhone: '',
-    guestEmail: '',
-    staffNote: '',
+    // デモ用: NEXT_PUBLIC_DEMO_PREFILL=true のときだけ、架空の人物の内容を入れた状態で始める
+    ...(demoPrefillEnabled(process.env.NEXT_PUBLIC_DEMO_PREFILL)
+      ? DEMO_BOOKING
+      : { guestName: '', guestCount: 1, guestPhone: '', guestEmail: '', staffNote: '' }),
   }))
   const [sending, setSending] = useState(false)
   const [done, setDone] = useState(false)
